@@ -75,7 +75,7 @@ OFF_code_0000d3:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined USARTF0_RXC(void)
-    rjmp        FUN_code_000770                         
+    rjmp        FUN_code_000770       ; USART F interrupt jump addr                  
     align       align(2)                                
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
@@ -453,7 +453,7 @@ LAB_code_00026a:
     brbs        LAB_code_00028c,Zflg                    
     ldi         param_4,0x7f                            
     cli                                                 
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     andi        param_5,0xf                             
     cpi         param_5,0xf                             
@@ -844,7 +844,7 @@ LAB_code_0003ff:
     rjmp        LAB_code_00045f                         
     ldi         param_4,0x7d                            
     cli                                                 
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     movw        Z,param_5                               
     or          param_5,param_5                         
@@ -862,12 +862,12 @@ LAB_code_00040f:
     add         param_4,param_4                         
     subi        param_4,0xf3                            
     cli                                                 
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     movw        param_3,param_5                         
     inc         param_4                                 
     cli                                                 
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     cp          param_5,param_3                         
     cpc         param_5,param_3                         
@@ -1235,7 +1235,7 @@ LAB_code_00055a:
     ldi         R16,0x20                                
     sts         iospace:PORTF_OUTSET,R16                ;= ??
 LAB_code_000585:              
-    call        FUN_code_001267                         ;undefined FUN_code_001267(void)
+    call        FUN_code_001267                         ; ? read from SPI
     swap        R19                                     
     andi        R19,0xe                                 
     bld         R19,0x0                                 
@@ -1386,7 +1386,7 @@ LAB_code_00060f:
     push        param_5                                 
     push        param_4                                 
     ldi         param_4,0x7f                            
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     sbrs        param_5,0x1                             
     rjmp        LAB_code_000624                         
     lds         param_4,sram:DAT_mem_2006               ;= ??
@@ -1442,7 +1442,7 @@ LAB_code_000646:
     sts         sram:DAT_mem_2159,R16                   ;= ??
     sts         sram:DAT_mem_2441,R16                   ;= ??
     sts         sram:DAT_mem_2006,R16                   ;= ??
-    sts         sram:DAT_mem_2162,R16                   ;= ??
+    sts         sram:DAT_mem_2162,R16                   ;? = CLK source ?
     ldi         R16,0x1                                 
     sts         iospace:PORTE_INTCTRL,R16               ;= ??
     ldi         R16,0x2                                 
@@ -1453,7 +1453,7 @@ LAB_code_000646:
     ldi         R16,0xbf                                
     sts         iospace:PORTB_DIRCLR,R16                ;= ??
     eor         R16,R16                                 
-    sts         iospace:SPIC,R16                        ;= ??
+    sts         iospace:SPIC,R16                        ;= Disable SPI C (Master)
     ser         R16                                     
     sts         iospace:PORTC_DIRCLR,R16                ;= ??
     ldi         R16,0x41                                
@@ -1470,7 +1470,7 @@ LAB_code_000646:
     ldi         R16,0xa0                                
     sts         iospace:PORTA_OUTSET,R16                ;= ??
     eor         R16,R16                                 
-    sts         iospace:SPID,R16                        ;= ??
+    sts         iospace:SPID,R16                        ;= Disable SPI D (IPBus slave)
     sts         iospace:DMA,R16                         ;= ??
     ret                                                 
 ;************************************************************************************************
@@ -1687,7 +1687,7 @@ LAB_code_000767:
     pop         Zhi                                     
     reti                                                
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;! *                       INTTERRUPT REQUEST USART F RC                                        *
 ;************************************************************************************************
 ;undefined FUN_code_000770(void)
     push        Zhi                                     
@@ -1744,7 +1744,7 @@ LAB_code_0007a1:
     pop         Zhi                                     
     reti                                                
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;!                                           MAIN                                               *
 ;************************************************************************************************
 ;undefined main(void)
     ldi         R16,0xcb                                
@@ -1927,7 +1927,7 @@ LAB_code_000895:
     bset        Iflg                                    
     ldi         Zlo,0x62                                
     ldi         Zhi,0x29                                
-    call        FUN_code_001413                         ;undefined FUN_code_001413(void)
+    call        SEND_STR                         ; Send: INR PM12
     ldi         R16,0x1                                 
     sts         iospace:PORTF_OUTCLR,R16                ;= ??
 LAB_code_0008a3:              
@@ -1977,7 +1977,7 @@ LAB_code_0008c9:
     lds         R20,iospace:PORTE_INTCTRL               ;= ??
     sbrs        R20,0x3                                 
     rjmp        LAB_code_0008b6                         
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     cpi         R18,0xb0                                
     brbs        LAB_code_0008d4,Cflg                    
@@ -2153,37 +2153,38 @@ LAB_code_000971:
 LAB_code_000974:              
     ret                                                 
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;!                                           CHECK_CMD                                          *
 ;************************************************************************************************
 ;undefined FUN_code_000975(void)
+; Compare each letter
     andi        R16,0x7f                                
     sts         sram:DAT_mem_2005,R16                   ;= ??
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-    cpi         R16,0x43                                
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+    cpi         R16,0x43                                ; compare with A
     brbc        LAB_code_000984,Zflg                    
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0x41                                
-    brbc        LAB_code_000981,Zflg                    
+    brbc        LAB_code_000981,Zflg                    ; compare with C
     rjmp        FUN_code_000df2                         ;undefined FUN_code_000df2(void)
 LAB_code_000981:              
     cpi         R16,0x50                                
     brbc        LAB_code_0009b1,Zflg                    
     rjmp        LAB_code_000a3c                         
 LAB_code_000984:              
-    cpi         R16,0x4f                                
+    cpi         R16, 'O'                                ; compare with O
     brbc        LAB_code_00098e,Zflg                    
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-    cpi         R16,0x4e                                
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+    cpi         R16, 'N'                                ; compare with N
     brbc        LAB_code_00098b,Zflg                    
-    rjmp        LAB_code_0009eb                         
+    rjmp        LAB_code_0009eb                         ; jump if cmd = ON         
 LAB_code_00098b:              
-    cpi         R16,0x46                                
+    cpi         R16, 'F'                                
     brbc        LAB_code_0009b1,Zflg                    
     rjmp        LAB_code_000a39                         
 LAB_code_00098e:              
-    cpi         R16,0x50                                
+    cpi         R16, 'P'                                
     brbc        LAB_code_00099b,Zflg                    
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,'A'                                 
     brbc        LAB_code_000995,Zflg                    
     rjmp        LAB_code_000a82                         
@@ -2196,110 +2197,110 @@ LAB_code_000998:
     brbc        LAB_code_0009b1,Zflg                    
     rjmp        FUN_code_000ad3                         ;undefined FUN_code_000ad3(void)
 LAB_code_00099b:              
-    cpi         R16,0x52                                
+    cpi         R16, 'R'                                
     brbc        LAB_code_0009b2,Zflg                    
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-    cpi         R16,0x41                                
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+    cpi         R16, 'A'                                
     brbc        LAB_code_0009a2,Zflg                    
-    rjmp        FUN_code_000c47                         ;undefined FUN_code_000c47(void)
+    rjmp        FUN_code_000c47                         ; if cmd = RA
 LAB_code_0009a2:              
-    cpi         R16,0x43                                
+    cpi         R16, 'C'                               
     brbc        LAB_code_0009a5,Zflg                    
-    rjmp        FUN_code_000e31                         ;undefined FUN_code_000e31(void)
+    rjmp        FUN_code_000e31                         ; if cmd = RC
 LAB_code_0009a5:              
-    cpi         R16,0x53                                
+    cpi         R16, 'S'                                
     brbc        LAB_code_0009a8,Zflg                    
-    rjmp        FUN_code_000d32                         ;undefined FUN_code_000d32(void)
+    rjmp        FUN_code_000d32                         ; if cmd = RS
 LAB_code_0009a8:              
-    cpi         R16,0x46                                
+    cpi         R16, 'F'                                
     brbc        LAB_code_0009ab,Zflg                    
-    rjmp        FUN_code_000e79                         ;undefined FUN_code_000e79(void)
+    rjmp        FUN_code_000e79                         ; if cmd = RF
 LAB_code_0009ab:              
-    cpi         R16,0x54                                
+    cpi         R16, 'T'                                ; <-----------------------------------------------------------------------------------------                                
     brbc        LAB_code_0009ae,Zflg                    
-    rjmp        FUN_code_000c88                         ;undefined FUN_code_000c88(void)
+    rjmp        ANS_ON_RT                               ; if cmd = RT
 LAB_code_0009ae:              
-    cpi         R16,0x5a                                
+    cpi         R16, 'Z'
     brbc        LAB_code_0009b1,Zflg                    
-    rjmp        FUN_code_000c5f                         ;undefined FUN_code_000c5f(void)
+    rjmp        FUN_code_000c5f                         ; if cmd = RZ
 LAB_code_0009b1:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 LAB_code_0009b2:              
-    cpi         R16,0x53                                
+    cpi         R16, 'S'                               
     brbc        LAB_code_0009db,Zflg                    
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-    cpi         R16,0x43                                
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+    cpi         R16,'C'                                
     brbc        LAB_code_0009c6,Zflg                    
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-    cpi         R16,0x4c                                
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+    cpi         R16, 'L'                                
     brbc        LAB_code_0009bd,Zflg                    
     rjmp        FUN_code_000f3e                         ;undefined FUN_code_000f3e(void)
 LAB_code_0009bd:              
-    cpi         R16,0x53                                
+    cpi         R16, 'S'                                
     brbc        LAB_code_0009c0,Zflg                    
     rjmp        FUN_code_000f70                         ;undefined FUN_code_000f70(void)
 LAB_code_0009c0:              
-    cpi         R16,0x54                                
+    cpi         R16,'T'                                
     brbc        LAB_code_0009c3,Zflg                    
     rjmp        FUN_code_000f17                         ;undefined FUN_code_000f17(void)
 LAB_code_0009c3:              
-    cpi         R16,0x52                                
-    brbc        LAB_code_0009e4,Zflg                    
+    cpi         R16, 'R'                                
+    brbc        SEND_SYNTAX_ERROR,Zflg                    
     rjmp        FUN_code_000edb                         ;undefined FUN_code_000edb(void)
 LAB_code_0009c6:              
-    cpi         R16,0x44                                
+    cpi         R16, 'D'                                
     brbc        LAB_code_0009c9,Zflg                    
     rjmp        FUN_code_000f9d                         ;undefined FUN_code_000f9d(void)
 LAB_code_0009c9:              
-    cpi         R16,0x4c                                
+    cpi         R16, 'L'                                
     brbc        LAB_code_0009cc,Zflg                    
     rjmp        FUN_code_000fc7                         ;undefined FUN_code_000fc7(void)
 LAB_code_0009cc:              
-    cpi         R16,0x4f                                
+    cpi         R16, 'O'                                
     brbc        LAB_code_0009cf,Zflg                    
     rjmp        FUN_code_000ff6                         ;undefined FUN_code_000ff6(void)
 LAB_code_0009cf:              
-    cpi         R16,0x53                                
+    cpi         R16, 'S'                                
     brbc        LAB_code_0009d2,Zflg                    
     rjmp        FUN_code_000eb1                         ;undefined FUN_code_000eb1(void)
 LAB_code_0009d2:              
-    cpi         R16,0x54                                
+    cpi         R16, 'T'                                
     brbc        LAB_code_0009d5,Zflg                    
     rjmp        FUN_code_000ec9                         ;undefined FUN_code_000ec9(void)
 LAB_code_0009d5:              
-    cpi         R16,0x56                                
+    cpi         R16, 'V'                                
     brbc        LAB_code_0009d8,Zflg                    
     rjmp        LAB_code_000a6c                         
 LAB_code_0009d8:              
-    cpi         R16,0x5a                                
-    brbc        LAB_code_0009e4,Zflg                    
+    cpi         R16, 'A'                                
+    brbc        SEND_SYNTAX_ERROR,Zflg                    
     rjmp        FUN_code_001027                         ;undefined FUN_code_001027(void)
 LAB_code_0009db:              
-    cpi         R16,0x57                                
-    brbc        LAB_code_0009e4,Zflg                    
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-    cpi         R16,0x52                                
-    brbc        LAB_code_0009e4,Zflg                    
+    cpi         R16, 'W'                                
+    brbc        SEND_SYNTAX_ERROR,Zflg                    
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+    cpi         R16, 'R'                                
+    brbc        SEND_SYNTAX_ERROR,Zflg                    
     rjmp        FUN_code_000cd7                         ;undefined FUN_code_000cd7(void)
 LAB_code_0009e2:              
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-LAB_code_0009e4:              
-    cpi         R16,0xd                                 
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+SEND_SYNTAX_ERROR:              
+    cpi         R16, '\r'                                
     brbc        LAB_code_0009e2,Zflg                    
     ldi         Zlo,0x88                                
     ldi         Zhi,0x29                                
-    call        FUN_code_001413                         ;undefined FUN_code_001413(void)
+    call        SEND_STR                         ;undefined SEND_STR(void)
     ret                                                 
-LAB_code_0009eb:              
+LAB_code_0009eb:                                        ; if cmd = ON
     ldi         R20,0x1                                 
 LAB_code_0009ec:              
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-    cpi         R16,0xd                                 
-    brbc        LAB_code_0009e4,Zflg                    
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+    cpi         R16, '\r'                                 
+    brbc        SEND_SYNTAX_ERROR,Zflg                    
     lds         R16,sram:DAT_mem_2234                   ;= ??
     cp          R16,R20                                 
     brbc        LAB_code_0009f5,Zflg                    
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 LAB_code_0009f5:              
     sts         sram:DAT_mem_2234,R20                   ;= ??
     lds         R16,iospace:NVM_STATUS                  ;= ??
@@ -2354,14 +2355,14 @@ LAB_code_000a25:
     sts         iospace:PORTA_OUTSET,R16                ;= ??
     bset        Iflg                                    
 LAB_code_000a38:              
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 LAB_code_000a39:              
     eor         R20,R20                                 
     rjmp        LAB_code_0009ec                         
 LAB_code_000a3b:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 LAB_code_000a3c:              
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000a3b,Zflg                    
     rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
@@ -2370,7 +2371,7 @@ LAB_code_000a3c:
 LAB_code_000a43:              
     eor         R18,R18                                 
     cli                                                 
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     sts         sram:DAT_mem_222f,R16                   ;= ??
     ldi         Ylo,0xb7                                
@@ -2378,7 +2379,7 @@ LAB_code_000a43:
 LAB_code_000a4c:              
     inc         R18                                     
     cli                                                 
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     st          Y+,R16                                  
     st          Y+,R17                                  
@@ -2390,7 +2391,7 @@ LAB_code_000a4c:
 LAB_code_000a58:              
     inc         R18                                     
     cli                                                 
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     st          Y+,R16                                  
     st          Y+,R17                                  
@@ -2398,15 +2399,15 @@ LAB_code_000a58:
     brbc        LAB_code_000a58,Zflg                    
     inc         R18                                     
     cli                                                 
-    call        FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    call        READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     sts         sram:DAT_mem_2230,R16                   ;= ??
     sts         sram:DAT_mem_2231,R17                   ;= ??
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 LAB_code_000a6b:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 LAB_code_000a6c:              
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0x20                                
     brbc        LAB_code_000a6b,Zflg                    
     call        FUN_code_001356                         ;undefined FUN_code_001356(void)
@@ -2424,7 +2425,7 @@ LAB_code_000a78:
     cli                                                 
     rcall       FUN_code_001187                         ;undefined FUN_code_001187(void)
     bset        Iflg                                    
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 LAB_code_000a82:              
     rcall       FUN_code_000abd                         ;undefined FUN_code_000abd(void)
     brbs        LAB_code_000a6b,Cflg                    
@@ -2473,7 +2474,7 @@ LAB_code_000a82:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000abd(void)
-    call        FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000ad0,Zflg                    
     ldi         Zlo,0x76                                
@@ -2487,14 +2488,14 @@ LAB_code_000ac3:
     brbc        LAB_code_000ac3,Zflg                    
     ldi         Zlo,0x98                                
     ldi         Zhi,0x29                                
-    call        FUN_code_001413                         ;undefined FUN_code_001413(void)
+    call        SEND_STR                         ;undefined SEND_STR(void)
     clc                                                 
     ret                                                 
 LAB_code_000ad0:              
     bset        Cflg                                    
     ret                                                 
 LAB_code_000ad2:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -2513,10 +2514,10 @@ LAB_code_000ad2:
     st          X,R16                                   
     rcall       FUN_code_000c20                         ;undefined FUN_code_000c20(void)
     eor         R17,R17                                 
-    call        FUN_code_00137c                         ;undefined FUN_code_00137c(void)
+    call        FUN_code_00139b                        ;undefined FUN_code_00137c(void)
     movw        R17R16,R19R18                           
-    call        FUN_code_00137c                         ;undefined FUN_code_00137c(void)
-    call        FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    call        FUN_code_00139b                        ;undefined FUN_code_00137c(void)
+    call        SEND_NEWLINE                         ;undefined SEND_NEWLINE(void)
     call        FUN_code_00141b                         ;undefined FUN_code_00141b(void)
     mov         Ylo,R16                                 
     call        FUN_code_00141b                         ;undefined FUN_code_00141b(void)
@@ -2574,12 +2575,12 @@ LAB_code_000b11:
 LAB_code_000b27:              
     rcall       FUN_code_000b9d                         ;undefined FUN_code_000b9d(void)
     rcall       FUN_code_000bb9                         ;undefined FUN_code_000bb9(undefined2...
-    call        FUN_code_00137c                         ;undefined FUN_code_00137c(void)
+    call        FUN_code_00139b                        ;undefined FUN_code_00137c(void)
     movw        R17R16,R19R18                           
-    call        FUN_code_00137c                         ;undefined FUN_code_00137c(void)
-    call        FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    call        FUN_code_00139b                        ;undefined FUN_code_00137c(void)
+    call        SEND_NEWLINE                         ;undefined SEND_NEWLINE(void)
     rcall       FUN_code_000b3f                         ;undefined FUN_code_000b3f(void)
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -2872,9 +2873,9 @@ LAB_code_000c43:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000c47(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
-    brbc        LAB_code_000c87,Zflg                    
+    brbc        LOOP_SEND_SYNTAX_ERROR,Zflg                    
     rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
     brbc        LAB_code_000c4d,Cflg                    
     ret                                                 
@@ -2882,28 +2883,28 @@ LAB_code_000c4d:
     ldi         R18,0x64                                
 LAB_code_000c4e:              
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
     ldi         R16,0x20                                
     call        FUN_code_001456                         ;undefined FUN_code_001456(void)
     inc         R18                                     
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
-    rcall       FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    rcall       SEND_NEWLINE                         ;undefined SEND_NEWLINE(void)
     inc         R18                                     
     cpi         R18,0x7c                                
     brbs        LAB_code_000c4e,Cflg                    
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000c5f(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
-    brbc        LAB_code_000c87,Zflg                    
+    brbc        LOOP_SEND_SYNTAX_ERROR,Zflg                    
     rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
     brbc        LAB_code_000c65,Cflg                    
     ret                                                 
@@ -2913,14 +2914,14 @@ LAB_code_000c66:
     ldi         R18,0xd                                 
     add         R18,R19                                 
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
     ldi         R16,0x20                                
     rcall       FUN_code_001456                         ;undefined FUN_code_001456(void)
     inc         R18                                     
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
     ldi         R16,0x20                                
@@ -2928,37 +2929,37 @@ LAB_code_000c66:
     ldi         R18,0x4c                                
     add         R18,R19                                 
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
     ldi         R16,0x20                                
     rcall       FUN_code_001456                         ;undefined FUN_code_001456(void)
     inc         R18                                     
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
-    rcall       FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    rcall       SEND_NEWLINE                         ;undefined SEND_NEWLINE(void)
     subi        R19,0xfe                                
     cpi         R19,0x18                                
     brbs        LAB_code_000c66,Cflg                    
-    rjmp        LAB_code_000ff1                         
-LAB_code_000c87:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_MSG_OK                         
+LOOP_SEND_SYNTAX_ERROR:              
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;!                                           Callback on RT                                           *
 ;************************************************************************************************
-;undefined FUN_code_000c88(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
-    cpi         R16,0xd                                 
-    brbc        LAB_code_000c87,Zflg                    
+;undefined ANS_ON_RT(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
+    cpi         R16, '\r                                 
+    brbc        LOOP_SEND_SYNTAX_ERROR,Zflg                    
     rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
-    brbc        LAB_code_000c8e,Cflg                    
+    brbc        LAB_code_000c8e,Cflg                    ; if read from FPGA is success
     ret                                                 
 LAB_code_000c8e:              
-    ldi         R18,0x3e                                
+    ldi         R18,0x3e                                ; Set address to TDC phase auto fine tuning result                              
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     mov         R20,R17                                 
     eor         R17,R17                                 
@@ -2974,25 +2975,25 @@ LAB_code_000c8e:
     rcall       FUN_code_0013a3                         ;undefined FUN_code_0013a3(void)
     ldi         R16,0x20                                
     rcall       FUN_code_001456                         ;undefined FUN_code_001456(void)
-    ldi         R18,0x3f                                
+    ldi         R18,0x3f                                ; Set address to TDC3 phase auto fine tuning result
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                        ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
     eor         R17,R17                                 
     sbrc        R16,0x7                                 
     com         R17                                     
     rcall       FUN_code_0013a3                         ;undefined FUN_code_0013a3(void)
-    rcall       FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    rcall       SEND_NEWLINE                         ;undefined SEND_NEWLINE(void)
     ldi         Ylo,0x7b                                
     ldi         Yhi,0x21                                
     eor         R23,R23                                 
-LAB_code_000cac:              
-    ldi         R18,0x40                                
-    add         R18,R23                                 
+RT_LOOP:              ;! Read lower line loop
+    ldi         R18,0x40                                ; Set address to TDC raw data in R18
+    add         R18,R23                                 ; ADD channel number to TDC raw data address
     cli                                                 
-    rcall       FUN_code_0011b4                         ;undefined FUN_code_0011b4(undefined2...
+    rcall       READ_REG_VIA_SPI                         ;undefined READ_REG_VIA_SPI(undefined2...
     bset        Iflg                                    
-    rcall       FUN_code_00137c                         ;undefined FUN_code_00137c(void)
+    rcall       FUN_code_00139b                        ;undefined FUN_code_00137c(void)
     cpi         R16,0x60                                
     brbs        LAB_code_000cb7,Sflg                    
     sbrs        R17,0x0                                 
@@ -3011,34 +3012,34 @@ LAB_code_000cbb:
 LAB_code_000cbf:              
     push        R16                                     
     ldi         R16,0x20                                
-    rcall       FUN_code_001456                         ;undefined FUN_code_001456(void)
+    rcall       FUN_code_001456                         
     pop         R16                                     
-    rcall       FUN_code_0013a3                         ;undefined FUN_code_0013a3(void)
+    rcall       FUN_code_0013a3                         ; ? Send: First number
     ldi         R16,0x20                                
-    rcall       FUN_code_001456                         ;undefined FUN_code_001456(void)
+    rcall       FUN_code_001456                         
     eor         R24,R24                                 
-    ld          R16,Y+                                  
-    add         R16,R16                                 
-    asr         R16                                     
-    eor         R17,R17                                 
-    sbrc        R16,0x7                                 
+    ld          R16,Y+                                  ; Load from Y
+    add         R16,R16                                 ; R16 * 2
+    asr         R16                                     ; R16 / 2
+    eor         R17,R17                                 ; R17 = 0
+    sbrc        R16,0x7                                 ; 
     com         R17                                     
-    rcall       FUN_code_0013a3                         ;undefined FUN_code_0013a3(void)
+    rcall       FUN_code_0013a3                         ; ? Send: Second number
     ldi         R16,0x20                                
-    rcall       FUN_code_001456                         ;undefined FUN_code_001456(void)
-    rcall       FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    rcall       FUN_code_001456                         ; ? Send: Third number
+    rcall       SEND_NEWLINE                            ; Send: "\r\n"
     inc         R23                                     
-    cpi         R23,0xc                                 
-    brbs        LAB_code_000cac,Sflg                    
-    rcall       FUN_code_00140f                         ;undefined FUN_code_00140f(void)
-    rjmp        LAB_code_000ff1                         
+    cpi         R23, 12                                 
+    brbs        RT_LOOP,Sflg                    
+    rcall       SEND_NEWLINE                            ; Send: "\r\n"
+    rjmp        SEND_MSG_OK                             ; Send: "OK"
 LAB_code_000cd6:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000cd7(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000cd6,Zflg                    
 LAB_code_000cda:              
@@ -3085,7 +3086,7 @@ LAB_code_000cfb:
 LAB_code_000d04:              
     rcall       FUN_code_000d07                         ;undefined FUN_code_000d07(void)
     cbi         iospace:GPIO_GPIOR0,0x3                 
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -3110,12 +3111,13 @@ LAB_code_000d18:
 LAB_code_000d1d:              
     ret                                                 
 LAB_code_000d1e:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;!                                           Callback on RZ                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000d1f(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+; Ponieważ są 4 parametry bardziej obstawiam collback na RZ
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000d1e,Zflg                    
     ldi         Zlo,0x3e                                
@@ -3133,36 +3135,36 @@ LAB_code_000d26:
     bset        Iflg                                    
     ldi         Zlo,0x98                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: OK
     ret                                                 
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;!                                           Callback on RS cms                                 *
 ;************************************************************************************************
 ;undefined FUN_code_000d32(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000d1e,Zflg                    
     ldi         Zlo,0x6a                                
     ldi         Zhi,0x2b                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: Board S/N
     lds         R16,sram:DAT_mem_2232                   ;= ??
     lds         R17,sram:DAT_mem_2233                   ;= ??
-    rcall       FUN_code_00137c                         ;undefined FUN_code_00137c(void)
+    rcall       FUN_code_00139b                        ;undefined FUN_code_00137c(void)
     ldi         Zlo,0x7e                                
     ldi         Zhi,0x2b                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: Flash Time...
     ldi         Zlo,0x92                                
     ldi         Zhi,0x2b                                
     lpm         R18,Z+                                  
     lpm         R19,Z+                                  
     lpm         R16,Z+                                  
     lpm         R17,Z+                                  
-    rcall       FUN_code_00137c                         ;undefined FUN_code_00137c(void)
+    rcall       FUN_code_00139b                        ;undefined FUN_code_00137c(void)
     movw        R17R16,R19R18                           
-    rcall       FUN_code_00137c                         ;undefined FUN_code_00137c(void)
+    rcall       FUN_code_00139b                        ;undefined FUN_code_00137c(void)
     ldi         Zlo,0xa6                                
-    ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    ldi         Zhi,0x29                                                  
+    rcall       SEND_STR                         ; Send: External clock
     cli                                                 
     lds         R18,sram:DAT_mem_2157                   ;= ??
     lds         R16,sram:DAT_mem_2160                   ;= ??
@@ -3172,63 +3174,64 @@ LAB_code_000d26:
     ldi         Zlo,0x98                                
     ldi         Zhi,0x29                                
     sbrc        R18,0x0                                 
-    rjmp        LAB_code_000d5c                         
+    rjmp        LAB_code_000d5c                         ; Send: OK
     ldi         Zlo,0x9e                                
-    ldi         Zhi,0x29                                
+    ldi         Zhi,0x29                                ; Send: FAIL
 LAB_code_000d5c:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send status message
     mov         R19,R18                                 
     ldi         Zlo,0xc0                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
-    rcall       FUN_code_00139b                         ;undefined FUN_code_00139b(void)
+    rcall       SEND_STR                         ; Send: Temperature
+    rcall       FUN_code_00139b                         ;undefined FUN_code_00139b 
+    ;? R19 -> temperatura, R18
     ldi         Zlo,0xce                                
     ldi         Zhi,0x29                                
     andi        R19,0x6                                 
-    brbs        LAB_code_000d70,Zflg                    
+    brbs        LAB_code_000d70,Zflg                    ; Send: Normal - if temp in normal
     ldi         Zlo,0xe2                                
     ldi         Zhi,0x29                                
     cpi         R19,0x6                                 
-    brbs        LAB_code_000d70,Zflg                    
+    brbs        LAB_code_000d70,Zflg                    ; Send: Critical - if temp is too high
     ldi         Zlo,0xdc                                
     ldi         Zhi,0x29                                
     andi        R19,0x4                                 
-    brbc        LAB_code_000d70,Zflg                    
+    brbc        LAB_code_000d70,Zflg                    ; Send: High    - if temp is high
     ldi         Zlo,0xd6                                
     ldi         Zhi,0x29                                
-LAB_code_000d70:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+LAB_code_000d70:                                        ; Send: Low     - else
+    rcall       SEND_STR                         ; Send: temperature description
     ldi         Zlo,0xec                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: Board power 
     sbrc        R20,0x2                                 
-    rjmp        LAB_code_000d7a                         
+    rjmp        LAB_code_000d7a                         ; Check power
     ldi         Zlo,0x2                                 
-    ldi         Zhi,0x2a                                
+    ldi         Zhi,0x2a                                ; Set str: OFF
 LAB_code_000d78:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: Off
     ret                                                 
 LAB_code_000d7a:              
     ldi         Zlo,0xfc                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: ON
     ldi         Zlo,0x98                                
     ldi         Zhi,0x29                                
     sbrc        R18,0x3                                 
     rjmp        LAB_code_000d89                         
     ldi         Zlo,0x9e                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: Fail
     sbrs        R18,0x6                                 
     ret                                                 
     ldi         Zlo,0xf2                                
     ldi         Zhi,0x2a                                
     rjmp        LAB_code_000d78                         
 LAB_code_000d89:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: 
     ldi         Zlo,0x28                                
     ldi         Zhi,0x2a                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ; Send: Clock source
     lds         R19,sram:DAT_mem_2162                   ;= ??
     ldi         Zlo,0x36                                
     ldi         Zhi,0x2a                                
@@ -3241,10 +3244,10 @@ LAB_code_000d89:
     ldi         Zlo,0x48                                
     ldi         Zhi,0x2a                                
 LAB_code_000d99:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x52                                
     ldi         Zhi,0x2a                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x5a                                
     ldi         Zhi,0x2a                                
     sbrs        R19,0x0                                 
@@ -3252,7 +3255,7 @@ LAB_code_000d99:
     ldi         Zlo,0x5e                                
     ldi         Zhi,0x2a                                
 LAB_code_000da3:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x4                                 
     ldi         Zhi,0x2b                                
     sbrc        R18,0x4                                 
@@ -3261,17 +3264,17 @@ LAB_code_000da3:
     ldi         Zhi,0x2a                                
     rjmp        LAB_code_000d78                         
 LAB_code_000dab:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x12                                
     ldi         Zhi,0x2b                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x98                                
     ldi         Zhi,0x29                                
     sbrs        R18,0x7                                 
     rjmp        LAB_code_000dc9                         
     ldi         Zlo,0x20                                
     ldi         Zhi,0x2b                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     lds         R20,sram:DAT_mem_2158                   ;= ??
     eor         R17,R17                                 
 LAB_code_000db9:              
@@ -3279,13 +3282,13 @@ LAB_code_000db9:
     rjmp        LAB_code_000dc4                         
     ldi         Zlo,0x28                                
     ldi         Zhi,0x2b                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         R16,0x30                                
     add         R16,R17                                 
     rcall       FUN_code_001456                         ;undefined FUN_code_001456(void)
     ldi         Zlo,0x2e                                
     ldi         Zhi,0x2b                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
 LAB_code_000dc4:              
     cpi         R17,0x2                                 
     brbc        LAB_code_000df1,Cflg                    
@@ -3293,10 +3296,10 @@ LAB_code_000dc4:
     lsr         R20                                     
     rjmp        LAB_code_000db9                         
 LAB_code_000dc9:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x96                                
     ldi         Zhi,0x2b                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     lds         R20,sram:DAT_mem_2441                   ;= ??
     add         R20,R20                                 
     ldi         Zlo,0xa8                                
@@ -3307,24 +3310,24 @@ LAB_code_000dc9:
     lpm         R20,Z+                                  
     lpm         R21,Z                                   
     movw        Z,R21R20                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x84                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     lds         R20,sram:DAT_mem_2158                   ;= ??
     ldi         Zlo,0x44                                
     ldi         Zhi,0x2b                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x2                                 
     ldi         Zhi,0x2a                                
     sbrc        R20,0x0                                 
     rjmp        LAB_code_000de7                         
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ret                                                 
 LAB_code_000de7:              
     ldi         Zlo,0xfc                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Zlo,0x4e                                
     ldi         Zhi,0x2b                                
     sbrs        R20,0x1                                 
@@ -3332,14 +3335,14 @@ LAB_code_000de7:
     ldi         Zlo,0x5c                                
     ldi         Zhi,0x2b                                
 LAB_code_000df0:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
 LAB_code_000df1:              
     ret                                                 
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000df2(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000e30,Zflg                    
     cli                                                 
@@ -3388,15 +3391,15 @@ LAB_code_000e13:
     ldi         Zlo,0x98                                
     ldi         Zhi,0x29                                
 LAB_code_000e2e:              
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ret                                                 
 LAB_code_000e30:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000e31(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000e30,Zflg                    
     eor         R20,R20                                 
@@ -3404,11 +3407,11 @@ LAB_code_000e30:
 LAB_code_000e36:              
     ldi         Zlo,0xc6                                
     ldi         Zhi,0x2a                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     mov         R16,R20                                 
     eor         R17,R17                                 
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Ylo,0x63                                
     ldi         Yhi,0x21                                
     mov         R22,R20                                 
@@ -3418,7 +3421,7 @@ LAB_code_000e36:
     ld          R16,Y+                                  
     ld          R17,Y                                   
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     mov         R23,R20                                 
     andi        R23,0x3                                 
     ldi         R24,0x20                                
@@ -3436,7 +3439,7 @@ LAB_code_000e36:
     sbrc        R16,0x7                                 
     ser         R17                                     
     rcall       FUN_code_0013a3                         ;undefined FUN_code_0013a3(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Ylo,0xb7                                
     ldi         Yhi,0x21                                
     mov         R22,R20                                 
@@ -3446,7 +3449,7 @@ LAB_code_000e36:
     ld          R16,Y+                                  
     ld          R17,Y+                                  
     rcall       FUN_code_0013a3                         ;undefined FUN_code_0013a3(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ldi         Ylo,0x87                                
     ldi         Yhi,0x21                                
     mov         R22,R20                                 
@@ -3462,7 +3465,7 @@ LAB_code_000e36:
     ld          R16,Y+                                  
     ld          R17,Y                                   
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
-    rcall       FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    rcall       SEND_NEWLINE                         ;undefined SEND_NEWLINE(void)
     inc         R20                                     
     cpi         R20,0xc                                 
     brbs        LAB_code_000e77,Zflg                    
@@ -3470,12 +3473,12 @@ LAB_code_000e36:
 LAB_code_000e77:              
     ret                                                 
 LAB_code_000e78:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000e79(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000e78,Zflg                    
     ldi         Ylo,0xcf                                
@@ -3484,57 +3487,57 @@ LAB_code_000e78:
 LAB_code_000e7f:              
     ldi         Zlo,0x68                                
     ldi         Zhi,0x2a                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     mov         R16,R20                                 
     eor         R17,R17                                 
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     cli                                                 
     ld          R16,Y+                                  
     ld          R17,Y+                                  
     bset        Iflg                                    
     rcall       FUN_code_001397                         ;undefined FUN_code_001397(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     cli                                                 
     ld          R16,Y+                                  
     ld          R17,Y+                                  
     bset        Iflg                                    
     rcall       FUN_code_001397                         ;undefined FUN_code_001397(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     cli                                                 
     ld          R16,Y+                                  
     ld          R17,Y+                                  
     bset        Iflg                                    
     rcall       FUN_code_001397                         ;undefined FUN_code_001397(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     cli                                                 
     ld          R16,Y+                                  
     ld          R17,Y+                                  
     bset        Iflg                                    
     rcall       FUN_code_00139f                         ;undefined FUN_code_00139f(void)
-    rcall       FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    rcall       SEND_NEWLINE                         ;undefined SEND_NEWLINE(void)
     inc         R20                                     
     cpi         R20,0xc                                 
     brbc        LAB_code_000e7f,Zflg                    
     ldi         Zlo,0x92                                
     ldi         Zhi,0x2a                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     lds         R16,sram:DAT_mem_222f                   ;= ??
     eor         R17,R17                                 
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     lds         R16,sram:DAT_mem_2230                   ;= ??
     lds         R17,sram:DAT_mem_2231                   ;= ??
     rcall       FUN_code_0013a7                         ;undefined FUN_code_0013a7(void)
-    rcall       FUN_code_00140f                         ;undefined FUN_code_00140f(void)
+    rcall       SEND_NEWLINE                         ;undefined SEND_NEWLINE(void)
     ret                                                 
 LAB_code_000eb0:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000eb1(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0x20                                
     brbc        LAB_code_000eb0,Zflg                    
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
@@ -3556,12 +3559,12 @@ LAB_code_000ebf:
     cli                                                 
     rcall       FUN_code_001187                         ;undefined FUN_code_001187(void)
     bset        Iflg                                    
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000ec9(void)
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0x20                                
     brbc        LAB_code_000eb0,Zflg                    
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
@@ -3578,7 +3581,7 @@ LAB_code_000ed3:
     cli                                                 
     rcall       FUN_code_001187                         ;undefined FUN_code_001187(void)
     bset        Iflg                                    
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -3642,9 +3645,9 @@ LAB_code_000efe:
     cli                                                 
     rcall       FUN_code_001187                         ;undefined FUN_code_001187(void)
     bset        Iflg                                    
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 LAB_code_000f16:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -3687,9 +3690,9 @@ LAB_code_000f2d:
     cli                                                 
     rcall       FUN_code_001187                         ;undefined FUN_code_001187(void)
     bset        Iflg                                    
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 LAB_code_000f3d:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -3744,7 +3747,7 @@ LAB_code_000f54:
     ld          R20,Y+                                  
     ld          R21,Y                                   
     rcall       FUN_code_001053                         ;undefined4 FUN_code_001053(undefined...
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -3793,9 +3796,9 @@ LAB_code_000f88:
     cli                                                 
     rcall       FUN_code_0010ba                         ;undefined5 FUN_code_0010ba(undefined...
     bset        Iflg                                    
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 LAB_code_000f9c:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -3842,7 +3845,7 @@ LAB_code_000fb3:
     st          Y+,R20                                  
     st          Y,R21                                   
     rcall       FUN_code_001068                         ;undefined4 FUN_code_001068(undefined...
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -3890,13 +3893,13 @@ LAB_code_000fdf:
     st          Y+,R20                                  
     st          Y,R21                                   
     rcall       FUN_code_001053                         ;undefined4 FUN_code_001053(undefined...
-LAB_code_000ff1:              
+SEND_MSG_OK:              
     ldi         Zlo,0x98                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ret                                                 
 LAB_code_000ff5:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -3949,9 +3952,9 @@ LAB_code_00100e:
     bset        Iflg                                    
     rcall       FUN_code_001082                         ;undefined3 FUN_code_001082(void)
     cbi         iospace:GPIO_GPIOR0,0x3                 
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 LAB_code_001026:              
-    rjmp        LAB_code_0009e4                         
+    rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -4000,7 +4003,7 @@ LAB_code_00103f:
     st          Y+,R20                                  
     st          Y,R21                                   
     rcall       FUN_code_001076                         ;undefined3 FUN_code_001076(void)
-    rjmp        LAB_code_000ff1                         
+    rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
@@ -4090,13 +4093,14 @@ LAB_code_00103f:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_00108e(void)
+;? Fail read from FPGA
     clc                                                 
     lds         R16,sram:DAT_mem_2157                   ;= ??
     sbrc        R16,0x4                                 
     ret                                                 
     ldi         Zlo,0xb4                                
     ldi         Zhi,0x2a                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     bset        Cflg                                    
     ret                                                 
 ;************************************************************************************************
@@ -4389,11 +4393,11 @@ LAB_code_0011a9:
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
-;undefined FUN_code_0011b4(undefined2 param_1, undefined2 param_2, undefined2 param_3, byte param_4, undefined2 param_5)
+;undefined READ_REG_VIA_SPI(undefined2 param_1, undefined2 param_2, undefined2 param_3, byte param_4, undefined2 param_5)
           ;param_1       undefined2      R25R24                      
           ;param_2       undefined2      R23R22                      
           ;param_3       undefined2      R21R20                      
-          ;param_4       byte               R18                      
+          ;param_4       byte               R18     Address                      
           ;param_5       undefined2      R17R16                      
     push        param_4                                 
     push        param_3                                 
@@ -4549,6 +4553,7 @@ LAB_code_00125e:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_001267(void)
+; ? read from SPI
     push        R22                                     
     push        R23                                     
     ldi         R16,0x8e                                
@@ -4743,7 +4748,7 @@ LAB_code_001305:
     eor         param_3,param_3                         
     eor         param_3,param_3                         
 LAB_code_001325:              
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     and         param_4,param_4                         
     brbc        LAB_code_00132d,Zflg                    
     cpi         unaff_R16,0x2d                          
@@ -4807,7 +4812,7 @@ LAB_code_00134f:
     eor         R20,R20                                 
     eor         R21,R21                                 
 LAB_code_00135b:              
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     mov         R22,R16                                 
     cpi         R16,0x30                                
     brbs        LAB_code_001374,Cflg                    
@@ -4832,7 +4837,7 @@ LAB_code_001366:
     inc         R18                                     
     cpi         R18,0x4                                 
     brbc        LAB_code_00135b,Zflg                    
-    rcall       FUN_code_00141e                         ;undefined FUN_code_00141e(void)
+    rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
 LAB_code_001374:              
     and         R18,R18                                 
     brbs        LAB_code_001378,Zflg                    
@@ -4891,7 +4896,7 @@ LAB_code_001395:
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
-;undefined FUN_code_00139b(void)
+;undefined FUN_code_00139b ; ? readTemp(void)
     push        R20                                     
     ldi         R20,0x1                                 
     bset        Cflg                                    
@@ -4916,6 +4921,8 @@ LAB_code_001395:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_0013a7(void)
+; ? Przeczytaj 4? rejestry w zależności zaczynając od adresu z R20?
+; ? Konwersja liczby długiej na ASCI? Podawanej w R20
     push        R20                                     
     eor         R20,R20                                 
     clc                                                 
@@ -5040,15 +5047,15 @@ LAB_code_001404:
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
-;undefined FUN_code_00140f(void)
+;undefined SEND_NEWLINE(void)
     ldi         Zlo,0x84                                
     ldi         Zhi,0x29                                
-    rcall       FUN_code_001413                         ;undefined FUN_code_001413(void)
+    rcall       SEND_STR                         ;undefined SEND_STR(void)
     ret                                                 
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
-;undefined FUN_code_001413(void)
+;undefined SEND_STR(void)
     push        R16                                     
 LAB_code_001414:              
     lpm         R16,Z+                                  
@@ -5067,9 +5074,11 @@ LAB_code_001419:
     ldi         R19,0x1                                 
     rjmp        LAB_code_001420                         
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;!                                           READ NEXT CHAR                                     *
 ;************************************************************************************************
-;undefined FUN_code_00141e(void)
+;undefined READ_NEXT_CHAR(void)
+; @return char in R16
+
     push        R19                                     
     eor         R19,R19                                 
 LAB_code_001420:              
@@ -5130,6 +5139,7 @@ LAB_code_00144e:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_001456(void)
+;? Prawdopodobnie wysłanie liczby
     push        Zhi                                     
     push        Zlo                                     
     push        R20                                     
