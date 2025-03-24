@@ -1435,6 +1435,7 @@ LAB_code_000646:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_00064b(void)
+; Clear data
     eor         R16,R16                                 
     sts         sram:DAT_mem_215c,R16                   ;= ??
     sts         sram:DAT_mem_215d,R16                   ;= ??
@@ -2272,7 +2273,7 @@ LAB_code_0009d5:
     brbc        LAB_code_0009d8,Zflg                    
     rjmp        LAB_code_000a6c                         
 LAB_code_0009d8:              
-    cpi         R16, 'A'                                
+    cpi         R16, 'Z'                                ; Set SZ
     brbc        SEND_SYNTAX_ERROR,Zflg                    
     rjmp        FUN_code_001027                         ;undefined FUN_code_001027(void)
 LAB_code_0009db:              
@@ -2365,7 +2366,7 @@ LAB_code_000a3c:
     call        READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LAB_code_000a3b,Zflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000a43,Cflg                    
     ret                                                 
 LAB_code_000a43:              
@@ -2414,7 +2415,7 @@ LAB_code_000a6c:
     brbs        LAB_code_000a6b,Cflg                    
     cpi         R16,0xd                                 
     brbc        LAB_code_000a6b,Zflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000a78,Cflg                    
     ret                                                 
 LAB_code_000a78:              
@@ -2876,7 +2877,7 @@ LAB_code_000c43:
     rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16,0xd                                 
     brbc        LOOP_SEND_SYNTAX_ERROR,Zflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000c4d,Cflg                    
     ret                                                 
 LAB_code_000c4d:              
@@ -2899,13 +2900,13 @@ LAB_code_000c4e:
     brbs        LAB_code_000c4e,Cflg                    
     rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;!                                           CALLBACK on RZ                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000c5f(void)
     rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
-    cpi         R16,0xd                                 
+    cpi         R16, '\r'                                
     brbc        LOOP_SEND_SYNTAX_ERROR,Zflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000c65,Cflg                    
     ret                                                 
 LAB_code_000c65:              
@@ -2953,7 +2954,7 @@ LOOP_SEND_SYNTAX_ERROR:
     rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
     cpi         R16, '\r                                 
     brbc        LOOP_SEND_SYNTAX_ERROR,Zflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000c8e,Cflg                    ; if read from FPGA is success
     ret                                                 
 LAB_code_000c8e:              
@@ -3110,16 +3111,15 @@ LAB_code_000d18:
     eor         R19,R19                                 
 LAB_code_000d1d:              
     ret                                                 
-LAB_code_000d1e:              
+_SEND_SYNTAX_ERROR:              
     rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;!                                           Callback on RZ                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000d1f(void)
-; Ponieważ są 4 parametry bardziej obstawiam collback na RZ
     rcall       READ_NEXT_CHAR                         ;undefined READ_NEXT_CHAR(void)
-    cpi         R16,0xd                                 
-    brbc        LAB_code_000d1e,Zflg                    
+    cpi         R16, '\r'                                 
+    brbc        _SEND_SYNTAX_ERROR,Zflg                    
     ldi         Zlo,0x3e                                
     ldi         Zhi,0x29                                
     ldi         R20,0x9                                 
@@ -3548,7 +3548,7 @@ LAB_code_000eb0:
     cpi         R20,0x0                                 
     cpc         R21,Xlo                                 
     brbc        LAB_code_000eb0,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000ebf,Cflg                    
     ret                                                 
 LAB_code_000ebf:              
@@ -3571,7 +3571,7 @@ LAB_code_000ebf:
     brbs        LAB_code_000eb0,Cflg                    
     and         R21,R21                                 
     brbc        LAB_code_000eb0,Zflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000ed3,Cflg                    
     ret                                                 
 LAB_code_000ed3:              
@@ -3618,7 +3618,7 @@ LAB_code_000ed3:
     cpi         R24,0x55                                
     cpc         R25,Xlo                                 
     brbs        LAB_code_000f16,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000efe,Cflg                    
     ret                                                 
 LAB_code_000efe:              
@@ -3671,7 +3671,7 @@ LAB_code_000f16:
     cpi         R20,0x0                                 
     cpc         R21,R24                                 
     brbc        LAB_code_000f3d,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000f2d,Cflg                    
     ret                                                 
 LAB_code_000f2d:              
@@ -3716,7 +3716,7 @@ LAB_code_000f3d:
     cpi         R20,0xa1                                
     cpc         R21,R24                                 
     brbc        LAB_code_000f3d,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000f54,Cflg                    
     ret                                                 
 LAB_code_000f54:              
@@ -3749,31 +3749,31 @@ LAB_code_000f54:
     rcall       FUN_code_001053                         ;undefined4 FUN_code_001053(undefined...
     rjmp        SEND_MSG_OK                         
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;*!                                           CALBACK SCS                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000f70(void)
-    rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000f9c,Cflg                    
+    rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined... ;? Probably read number from serial
+    brbs        _SEND_SYNTAX_ERROR_SEND,Cflg                    
     and         R21,R21                                 
-    brbc        LAB_code_000f9c,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
     cpi         R20,0xc                                 
-    brbc        LAB_code_000f9c,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Sflg                    
     mov         R19,R20                                 
     cpi         R16,0x20                                
-    brbc        LAB_code_000f9c,Zflg                    
-    rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000f9c,Cflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
+    rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined... ;? Probably read number from serial
+    brbs        _SEND_SYNTAX_ERROR_SEND,Cflg                    
     cpi         R16,0xd                                 
-    brbc        LAB_code_000f9c,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
     ldi         R24,0x0                                 
     cpi         R20,0x40                                
     cpc         R21,R24                                 
-    brbc        LAB_code_000f9c,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Sflg                    
     ser         R24                                     
     cpi         R20,0xc0                                
     cpc         R21,R24                                 
-    brbs        LAB_code_000f9c,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    brbs        _SEND_SYNTAX_ERROR_SEND,Sflg                    
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000f88,Cflg                    
     ret                                                 
 LAB_code_000f88:              
@@ -3797,32 +3797,32 @@ LAB_code_000f88:
     rcall       FUN_code_0010ba                         ;undefined5 FUN_code_0010ba(undefined...
     bset        Iflg                                    
     rjmp        SEND_MSG_OK                         
-LAB_code_000f9c:              
+_SEND_SYNTAX_ERROR_SEND:              
     rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000f9d(void)
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000f9c,Cflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND,Cflg                    
     and         R21,R21                                 
-    brbc        LAB_code_000f9c,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
     cpi         R20,0xc                                 
-    brbc        LAB_code_000f9c,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Sflg                    
     mov         R22,R20                                 
     cpi         R16,0x20                                
-    brbc        LAB_code_000f9c,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000f9c,Cflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND,Cflg                    
     cpi         R16,0xd                                 
-    brbc        LAB_code_000f9c,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
     and         R21,R21                                 
-    brbs        LAB_code_000f9c,Nflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND,Nflg                    
     ldi         R24,0x4e                                
     cpi         R20,0x21                                
     cpc         R21,R24                                 
-    brbc        LAB_code_000f9c,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    brbc        _SEND_SYNTAX_ERROR_SEND,Sflg                    
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000fb3,Cflg                    
     ret                                                 
 LAB_code_000fb3:              
@@ -3851,27 +3851,27 @@ LAB_code_000fb3:
 ;************************************************************************************************
 ;undefined FUN_code_000fc7(void)
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000f9c,Cflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND,Cflg                    
     and         R21,R21                                 
-    brbc        LAB_code_000f9c,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
     cpi         R20,0xc                                 
-    brbc        LAB_code_000f9c,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Sflg                    
     mov         R22,R20                                 
     cpi         R16,0x20                                
-    brbc        LAB_code_000f9c,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000f9c,Cflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND,Cflg                    
     cpi         R16,0xd                                 
-    brbc        LAB_code_000f9c,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Zflg                    
     ldi         R24,0x75                                
     cpi         R20,0x31                                
     cpc         R21,R24                                 
-    brbc        LAB_code_000f9c,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND,Sflg                    
     ldi         R24,0x1                                 
     cpi         R20,0x2c                                
     cpc         R21,R24                                 
-    brbs        LAB_code_000f9c,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    brbs        _SEND_SYNTAX_ERROR_SEND,Sflg                    
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_000fdf,Cflg                    
     ret                                                 
 LAB_code_000fdf:              
@@ -3898,34 +3898,34 @@ SEND_MSG_OK:
     ldi         Zhi,0x29                                
     rcall       SEND_STR                         ;undefined SEND_STR(void)
     ret                                                 
-LAB_code_000ff5:              
+_SEND_SYNTAX_ERROR_SEND_2:              
     rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_000ff6(void)
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000ff5,Cflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND_2,Cflg                    
     and         R21,R21                                 
-    brbc        LAB_code_000ff5,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Zflg                    
     cpi         R20,0xc                                 
-    brbc        LAB_code_000ff5,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Sflg                    
     mov         R22,R20                                 
     cpi         R16,0x20                                
-    brbc        LAB_code_000ff5,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Zflg                    
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000ff5,Cflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND_2,Cflg                    
     cpi         R16,0xd                                 
-    brbc        LAB_code_000ff5,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Zflg                    
     ldi         R24,0x1                                 
     cpi         R20,0xf5                                
     cpc         R21,R24                                 
-    brbc        LAB_code_000ff5,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Sflg                    
     ldi         R24,0xfe                                
     cpi         R20,0xc                                 
     cpc         R21,R24                                 
-    brbs        LAB_code_000ff5,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    brbs        _SEND_SYNTAX_ERROR_SEND_2,Sflg                    
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_00100e,Cflg                    
     ret                                                 
 LAB_code_00100e:              
@@ -3953,34 +3953,34 @@ LAB_code_00100e:
     rcall       FUN_code_001082                         ;undefined3 FUN_code_001082(void)
     cbi         iospace:GPIO_GPIOR0,0x3                 
     rjmp        SEND_MSG_OK                         
-LAB_code_001026:              
+_SEND_SYNTAX_ERROR_SEND_3:              
     rjmp        SEND_SYNTAX_ERROR                         
 ;************************************************************************************************
-;*                                           FUNCTION                                           *
+;*!                                           CALLBACK SZ                                           *
 ;************************************************************************************************
-;undefined FUN_code_001027(void)
+;undefined FUN_code_001027(void) ;! Function SZ
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000ff5,Cflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND_2,Cflg                    
     and         R21,R21                                 
-    brbc        LAB_code_000ff5,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Zflg                    
     cpi         R20,0xc                                 
-    brbc        LAB_code_000ff5,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Sflg                    
     mov         R22,R20                                 
     cpi         R16,0x20                                
-    brbc        LAB_code_000ff5,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Zflg                    
     rcall       FUN_code_00131a                         ;undefined5 FUN_code_00131a(undefined...
-    brbs        LAB_code_000ff5,Cflg                    
+    brbs        _SEND_SYNTAX_ERROR_SEND_2,Cflg                    
     cpi         R16,0xd                                 
-    brbc        LAB_code_000ff5,Zflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_2,Zflg                    
     ldi         R24,0x1                                 
     cpi         R20,0xf5                                
     cpc         R21,R24                                 
-    brbc        LAB_code_001026,Sflg                    
+    brbc        _SEND_SYNTAX_ERROR_SEND_3,Sflg                    
     ldi         R24,0xfe                                
     cpi         R20,0xc                                 
     cpc         R21,R24                                 
-    brbs        LAB_code_001026,Sflg                    
-    rcall       FUN_code_00108e                         ;undefined FUN_code_00108e(void)
+    brbs        _SEND_SYNTAX_ERROR_SEND_3,Sflg                    
+    rcall       SEND_FPGA_NOT_READY                         ;undefined SEND_FPGA_NOT_READY(void)
     brbc        LAB_code_00103f,Cflg                    
     ret                                                 
 LAB_code_00103f:              
@@ -4092,7 +4092,7 @@ LAB_code_00103f:
 ;************************************************************************************************
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
-;undefined FUN_code_00108e(void)
+;undefined SEND_FPGA_NOT_READY(void)
 ;? Fail read from FPGA
     clc                                                 
     lds         R16,sram:DAT_mem_2157                   ;= ??
@@ -4100,7 +4100,7 @@ LAB_code_00103f:
     ret                                                 
     ldi         Zlo,0xb4                                
     ldi         Zhi,0x2a                                
-    rcall       SEND_STR                         ;undefined SEND_STR(void)
+    rcall       SEND_STR                         ;SEND_STR("FPGA not ready")
     bset        Cflg                                    
     ret                                                 
 ;************************************************************************************************
@@ -4520,6 +4520,7 @@ LAB_code_001236:
 ;*                                           FUNCTION                                           *
 ;************************************************************************************************
 ;undefined FUN_code_001243(void)
+;? Send reg via spi?
     push        R22                                     
     ldi         R22,0xf1                                
     sts         iospace:SPIC,R22                        ;= ??
